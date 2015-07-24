@@ -12,7 +12,10 @@
 #include <net/if.h>
 #include <unistd.h> 
 #include <string.h>
- 
+
+// Navio+ sensors
+#include "sensors/MS5611.cpp"
+
 using namespace cv;
 
 int main(int argc, char** argv)
@@ -98,6 +101,10 @@ int main(int argc, char** argv)
 	VideoWriter videoOut;
 
 	videoOut.open("rec.avi", CV_FOURCC('P','I','M','1'), 24, Size(640,480), true);			// File name, MPEG-1, 25 fps, 640x480, isColor = true
+    
+    MS5611 barometer;
+    barometer.initialize();
+    
     while(1)
     {
         /* get a frame from camera */
@@ -108,7 +115,17 @@ int main(int argc, char** argv)
 
 		videoOut << imgGray;
 		
-        putText(imgGray, "sfsdgfjhgsdjfhjdsg", Point(30,30), FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
+		barometer.refreshPressure();
+        usleep(10000); // Waiting for pressure data ready
+        barometer.readPressure();
+
+        barometer.refreshTemperature();
+        usleep(10000); // Waiting for temperature data ready
+        barometer.readTemperature();
+
+        barometer.calculatePressureAndTemperature();
+		
+        putText(imgGray, barometer.getTemperature(), Point(30,30), FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
 
         //send processed image
         if ((bytes = send(remoteSocket, imgGray.data, imgSize, 0)) < 0)
