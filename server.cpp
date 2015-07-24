@@ -12,11 +12,15 @@
 #include <net/if.h>
 #include <unistd.h> 
 #include <string.h>
+#include <sstream>
 
 // Navio+ sensors
 #include "sensors/MS5611.cpp"
 
 using namespace cv;
+
+std::string getTemp(MS5611);
+std::string getPress(MS5611);
 
 int main(int argc, char** argv)
 {	 
@@ -32,7 +36,7 @@ int main(int argc, char** argv)
            
     int addrLen = sizeof(struct sockaddr_in);
        
-    if ( (argc > 1) && (strcmp(argv[1],"-h") == 0) )
+    if ((argc > 1) && (strcmp(argv[1],"-h") == 0))
     {
         std::cerr << "usage: ./cv_video_srv [port] [capture device]\n" <<
                    "port           : socket port (4097 default)\n" <<
@@ -40,7 +44,8 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    if (argc == 2) port = atoi(argv[1]);
+    if (argc == 2)
+		port = atoi(argv[1]);
 
     localSocket = socket(AF_INET , SOCK_STREAM , 0);
     if (localSocket == -1)
@@ -115,17 +120,8 @@ int main(int argc, char** argv)
 
 		videoOut << imgGray;
 		
-		barometer.refreshPressure();
-        usleep(10000); // Waiting for pressure data ready
-        barometer.readPressure();
-
-        barometer.refreshTemperature();
-        usleep(10000); // Waiting for temperature data ready
-        barometer.readTemperature();
-
-        barometer.calculatePressureAndTemperature();
-		
-        putText(imgGray, barometer.getTemperature(), Point(30,30), FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
+        putText(imgGray, getTemp(barometer), Point(30,30), FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
+		putText(imgGray, getPress(barometer), Point(300,30), FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255,255,255), 1, CV_AA);
 
         //send processed image
         if ((bytes = send(remoteSocket, imgGray.data, imgSize, 0)) < 0)
@@ -139,4 +135,31 @@ int main(int argc, char** argv)
     close(remoteSocket);
 
     return 0;
+}
+
+std::string getTemp(MS5611 barometer)
+{
+	barometer.refreshTemperature();
+	usleep(10000); // Waiting for temperature data ready
+	barometer.readTemperature();
+
+	barometer.calculatePressureAndTemperature();
+	
+	std::ostringstream ss;
+	ss << barometer.getTemperature();
+	
+	return ss.str();
+}
+
+std::string getPress(MS5611 barometer)
+{
+	barometer.refreshPressure();
+	usleep(10000); // Waiting for pressure data ready
+	barometer.readPressure();
+
+	barometer.calculatePressureAndTemperature();
+	
+	std::ostringstream ss;
+	ss << barometer.getPressure();
+	return ss.str();
 }
