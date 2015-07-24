@@ -105,11 +105,11 @@ int main(int argc, char** argv)
 
 	VideoWriter videoOut;
 
-	videoOut.open("rec.avi", CV_FOURCC('P','I','M','1'), 24, Size(640,480), true);			// File name, MPEG-1, 25 fps, 640x480, isColor = true
-    
+	videoOut.open("rec.avi", CV_FOURCC('P','I','M','1'), 30, Size(640,480), false);			// File name, MPEG-1, 25 fps, 640x480, isColor = true
+
     MS5611 barometer;
     barometer.initialize();
-    
+ 
     while(1)
     {
         /* get a frame from camera */
