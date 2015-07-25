@@ -1,16 +1,5 @@
-/***********************************************************************
- * FPV-Pi.
- * 
- * Author: Gabriel Mariano Marcelino <gabriel.mm8@gmail.com>
- * 
- * Created on 23/07/2015
- * Last modification: 24/07/2015
- * 
- * Language: C/C++
- * 
-***********************************************************************/
  
-#include <opencv2/opencv.hpp>
+#include "opencv2/opencv.hpp"
 #include <sys/socket.h> 
 #include <arpa/inet.h>
 #include <unistd.h>
