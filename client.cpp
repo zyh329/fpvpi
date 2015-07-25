@@ -19,15 +19,12 @@ using namespace cv;
 
 int main(int argc, char** argv)
 {
-    //--------------------------------------------------------
-    //networking stuff: socket , connect
-    //--------------------------------------------------------
+//**********************************************************************
+//-- Network code ------------------------------------------------------
+//**********************************************************************
     int sokt;
     char* serverIP;
     int serverPort;
-
-    if (argc < 3)
-        std::cerr << "Usage: cv_video_cli <serverIP> <serverPort> " << std::endl;
 
     serverIP = argv[1];
     serverPort = atoi(argv[2]);
@@ -36,19 +33,18 @@ int main(int argc, char** argv)
     socklen_t addrLen = sizeof(struct sockaddr_in);
 
     if ((sokt = socket(PF_INET, SOCK_STREAM, 0)) < 0)
-        std::cerr << "socket() failed" << std::endl;
+        exit(1);
 
     serverAddr.sin_family = PF_INET;
     serverAddr.sin_addr.s_addr = inet_addr(serverIP);
     serverAddr.sin_port = htons(serverPort);
 
     if (connect(sokt, (sockaddr*)&serverAddr, addrLen) < 0)
-        std::cerr << "connect() failed!" << std::endl;
+        exit(1);
 
-    //----------------------------------------------------------
-    //OpenCV Code
-    //----------------------------------------------------------
-
+//**********************************************************************
+//-- OpenCV code -------------------------------------------------------
+//**********************************************************************
     Mat img;
     img = Mat::zeros(480 , 640, CV_8U);    
     int imgSize = img.total() * img.elemSize();
@@ -56,18 +52,15 @@ int main(int argc, char** argv)
     int bytes = 0;
     int key;
 
-    //make img continuos
     if (!img.isContinuous())
         img = img.clone();
-        
-    std::cout << "Image Size:" << imgSize << std::endl;
 
     namedWindow("CV Video Client",1);
 
     while (key != 'q')
     {
         if ((bytes = recv(sokt, iptr, imgSize , MSG_WAITALL)) == -1)
-            std::cerr << "recv failed, received bytes = " << bytes << std::endl;
+            exit(1);
         
         cv::imshow("CV Video Client", img); 
       
