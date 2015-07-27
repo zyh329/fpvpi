@@ -57,7 +57,7 @@ FPVPi_Client::FPVPi_Client()
 
     connected = false;
 
-    Glib::signal_timeout().connect(sigc::mem_fun(*this, &FPVPi_Client::timer), 30);
+    Glib::signal_timeout().connect(sigc::mem_fun(*this, &FPVPi_Client::timer), 20);
 
     show_all_children();
 }
@@ -101,8 +101,7 @@ void FPVPi_Client::Connect()
         else
         {
             img = Mat::zeros(480 , 640, CV_8U);
-            iptr = img.data;
-            bytes = 0;
+            //iptr = img.data;
 
             if (!img.isContinuous())
                 img = img.clone();
@@ -122,10 +121,12 @@ void FPVPi_Client::Disconnect()
 
 void FPVPi_Client::ReceiveImage()
 {
-    if ((bytes = recv(sokt, iptr, img.total()*img.elemSize(), MSG_WAITALL)) == -1)
-        Error("Erro 1!");
+    uchar *iptr = img.data;
+    if (recv(sokt, iptr, img.total()*img.elemSize(), MSG_WAITALL) == -1)
+        //Error("Erro 1!");
+        std::cout << "Erro 1!" << std::endl;
     else
-    {    
+    {
         cvtColor(img, img, CV_GRAY2RGB);
         
         Glib::RefPtr<Gdk::Pixbuf> pixbuf = Gdk::Pixbuf::create_from_data(
@@ -137,6 +138,7 @@ void FPVPi_Client::ReceiveImage()
                                             img.rows,
                                             img.step);
         main_display_image.set(pixbuf);
+        
     }
 }
 

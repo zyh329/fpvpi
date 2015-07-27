@@ -24,8 +24,7 @@ class FPVPi_Client: public Gtk::Window
         int sokt;
         bool connected;
         Mat img;
-        uchar *iptr;
-        int bytes;
+        //uchar *iptr;
     public:
         FPVPi_Client();
         virtual ~FPVPi_Client();
