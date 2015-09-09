@@ -35,6 +35,7 @@ class FPVPi_Client: public Gtk::Window
         void ReceiveImage();
         void Error(const char*);
         bool timer();
+        void Rec();
 
         // Member widgets:
         Gtk::Fixed fixed;
@@ -44,6 +45,7 @@ class FPVPi_Client: public Gtk::Window
             // Buttons
         Gtk::Button connect_button;
         Gtk::Button disconnect_button;
+        Gtk::Button rec_button;
             // Entries
         Gtk::Entry address_entry;
         Gtk::Entry port_entry;

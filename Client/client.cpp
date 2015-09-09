@@ -46,6 +46,10 @@ FPVPi_Client::FPVPi_Client()
     disconnect_button.set_label("Disconnect");
     disconnect_button.signal_clicked().connect(sigc::mem_fun(*this, &FPVPi_Client::Disconnect));
 
+    fixed.put(rec_button, 700, 600);
+    rec_button.set_label("Rec");
+    rec_button.signal_clicked().connect(sigc::mem_fun(*this, &FPVPi_Client::Rec));
+
     fixed.put(address_entry, 770, 10);
     address_entry.set_text("192.168.0.");
     
@@ -155,6 +159,11 @@ bool FPVPi_Client::timer()
         ReceiveImage();
 
     return true;
+}
+
+void FPVPi_Client::Rec()
+{
+    
 }
 
 #endif
