@@ -10,8 +10,8 @@ __AUTHOR__ = "Gabriel Mariano Marcelino"
 __DATE__ = "09/09/2015"
 
 def getCPUtemperature():
-	res = os.popen(‘vcgencmd measure_temp’).readline()
-	return int(float(res.replace(“temp=”,””).replace(“‘C\n”,””)))
+	res = os.popen('vcgencmd measure_temp').readline()
+	return int(float(res.replace("temp=","").replace("'C\n","")))
 
 def getBarTemperature(baro):
 	baro.refreshTemperature()
@@ -30,9 +30,21 @@ bar_temp = []
 for i in xrange(0,44):
 	cpu_temp.append(getCPUtemperature())
 	bar_temp.append(getBarTemperature(baro))
-	minute.append(i)
+	time.append(i)
 	tm.sleep(15)
 	
+
+f = open("time", "w")
+f.write(time)
+f.close()
+
+f = open("cpu_temp", "w")
+f.write(cpu_temp)
+f.close()
+
+f = open("bar_temp", "w")
+f.write(bar_temp)
+f.close()
 
 pylab.plot(time, cpu_temp, "-b", label='CPU temperature')
 pylab.plot(time, bar_temp, "-r", label='Barometer temperature')
